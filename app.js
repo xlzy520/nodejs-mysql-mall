@@ -11,14 +11,10 @@ var index = require('./routes/index');
 
 let order = require('./routes/mall/order');
 let user = require('./routes/mall/user');
-let address = require('./routes/mall/address');
 let goods = require('./routes/mall/goods');
 let cart = require('./routes/mall/cart');
 let userUpload = require('./routes/mall/upload');
-let PCCT = require('./routes/mall/PCCT');
-let collection = require('./routes/mall/collection');
 
-let role = require('./routes/admin/role');
 let menu = require('./routes/admin/menu');
 let admin = require('./routes/admin/admin');
 let category = require('./routes/admin/category');
@@ -51,16 +47,12 @@ app.use(expressJwt({ secret: 'secret' }).unless({
 
 app.use('/', index);
 
-app.use('/api/address', address);
 app.use('/api/user', user);
 app.use('/api/goods', goods);
 app.use('/api/cart', cart);
 app.use('/api/order', order);
 app.use('/api/upload', userUpload);
-app.use('/api/pcct', PCCT);
-app.use('/api/collection', collection);
 
-app.use('/api/role', role);
 app.use('/api/menu', menu);
 app.use('/api/admin', admin);
 app.use('/api/category', category);

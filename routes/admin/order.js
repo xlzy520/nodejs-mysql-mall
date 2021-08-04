@@ -8,7 +8,7 @@ let db = require('../../config/mysql');
  * @apiName AdminOrderList
  * @apiGroup admin Order
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} [pageSize] 一个页有多少个商品,默认4个;
  * @apiParam {Number} [pageIndex] 第几页,默认1;
  * @apiParam {Number=0,3,4,5,all} status 订单状态:0-待付款，3-待发货，4-待收货，5-待评价，all-所有状态;
@@ -16,7 +16,7 @@ let db = require('../../config/mysql');
  * @apiSampleRequest /api/admin/order/list
  */
 router.get('/list', function(req, res) {
-	let { pageSize = 4, pageIndex = 1, status = 'all' } = req.query;
+	let { pageSize = 100, pageIndex = 1, status = 'all' } = req.query;
 	let size = parseInt(pageSize);
 	let count = size * (pageIndex - 1);
 	// 查询所有订单

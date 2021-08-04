@@ -9,9 +9,9 @@ let db = require('../../config/mysql');
  * @apiName SettleOrder
  * @apiGroup Order
  * @apiPermission user
- * 
+ *
  * @apiParam {Number[]} goods 欲购买商品id，格式：[id1,id2,id3];
- * 
+ *
  * @apiSampleRequest /api/order/settle
  */
 router.post('/settle', function (req, res) {
@@ -19,20 +19,17 @@ router.post('/settle', function (req, res) {
 	let { id } = req.user;
 	// 多表查询
 	let data = {};
-	let sql = "SELECT a.*, p.`name` AS province_name, c.`name` AS city_name, ct.`name` AS county_name, t.`name` AS town_name FROM address a JOIN province p ON p.province_id = a.province_id JOIN city c ON c.city_id = a.city_id JOIN county ct ON ct.county_id = a.county_id JOIN town t ON t.town_id = a.town_id WHERE uid =? AND isDefault =1 LIMIT 1";
-	db.query(sql, [id], function (results) {
-		data.address = results[0];
-		let sql = `SELECT g.id, g.name, g.price, g.img_md, c.goods_num FROM goods g JOIN cart c ON g.id = c.goods_id  WHERE c.uid = ? AND c.goods_id IN (?)`;
-		db.query(sql, [id, goods], function (results, fields) {
-			data.goods = results;
-			//成功
-			res.json({
-				status: true,
-				msg: "success!",
-				data
-			});
-		});
-	});
+  let sql = `SELECT g.id, g.name, g.price, g.img_md, c.goods_num FROM goods g JOIN cart c ON g.id = c.goods_id  WHERE c.uid = ? AND c.goods_id IN (?)`;
+  db.query(sql, [id, goods], function (results, fields) {
+    console.log(results);
+    data.goods = results;
+    //成功
+    res.json({
+      status: true,
+      msg: "success!",
+      data
+    });
+  });
 });
 /**
  * @api {post} /api/order/create 提交订单->生成订单
@@ -40,19 +37,20 @@ router.post('/settle', function (req, res) {
  * @apiName CreateOrder
  * @apiGroup Order
  * @apiPermission user
- * 
+ *
  * @apiParam {Number} payment 支付金额,小数点至2位;
  * @apiParam {Number} addressId 收货地址id;
  * @apiParam {Object[]} goodsList 商品数组,包含每一个商品的id,数量，例：[{id:15,num:1},{id:16,num:2}];
  * @apiParam {Number} goodsList.id 商品id;
  * @apiParam {Number} goodsList.num 商品数量;
- * 
+ *
  * @apiSampleRequest /api/order/create
  */
 router.post('/create', function (req, res) {
 	// 准备查询的商品id,方便使用IN
 	let queryGid = [];
-	let { addressId, payment, goodsList } = req.body;
+  console.log(222);
+  let { addressId, payment, goodsList } = req.body;
 	let { id } = req.user;
 	goodsList.forEach(function (item) {
 		queryGid.push(item.id);
@@ -119,7 +117,7 @@ router.post('/create', function (req, res) {
 								});
 							}
 							// 购物车对应商品复制到order_goods表中，cart表删除对应商品
-							let sql = `INSERT INTO order_goods ( order_id, goods_id, goods_num, goods_price ) 
+							let sql = `INSERT INTO order_goods ( order_id, goods_id, goods_num, goods_price )
 								SELECT ( ? ), c.goods_id, c.goods_num, g.price FROM cart c JOIN goods g ON g.id = c.goods_id WHERE c.uid = ? AND c.goods_id IN (?);
 								DELETE FROM cart WHERE uid = ? AND goods_id IN (?)`;
 							connection.query(sql, [insertId, id, queryGid, id, queryGid], function (error, results,
@@ -157,11 +155,11 @@ router.post('/create', function (req, res) {
  * @apiName OrderList
  * @apiGroup Order
  * @apiPermission user
- * 
+ *
  * @apiParam {Number} [pageSize] 一个页有多少个商品,默认4个;
  * @apiParam {Number} [pageIndex] 第几页,默认1;
  * @apiParam {Number=0,3,4,5} status 订单状态:0-待付款，3-待发货，4-待收货，5-待评价;
- * 
+ *
  * @apiSampleRequest /api/order/list
  */
 router.get('/list', function (req, res) {
@@ -177,7 +175,8 @@ router.get('/list', function (req, res) {
 	db.query(sql, [id, status, count, size], function (results, fields) {
 		// 查询订单商品信息
 		let data = results;
-		let sql =
+    console.log(data);
+    let sql =
 			`SELECT g.id, o.id AS order_id, g.name, g.img_md, og.goods_num, og.goods_price
 			 FROM orders o JOIN order_goods og ON o.id = og.order_id
 			 JOIN goods g ON g.id = og.goods_id
